@@ -1,7 +1,7 @@
 import json
 import numpy as np
-
 from .models import Bicluster, Biclustering
+
 
 def save_biclusterings(b, file_path):
     """Dumps biclusterings to a file using the json module.

@@ -1,5 +1,5 @@
 """
-    biclustlib: A Python library of biclustering algorithms and evaluation measures.
+    biclustlib: A Python library of biclustering algorithms including CCA and evaluation measures.
     Copyright (C) 2017  Victor Alexandre Padilha
 
     This file is part of biclustlib.
