@@ -1,14 +1,12 @@
 """
-    FunBic-CCA: A Python library of privacy-preserving biclustering algorithm (Cheng and Church) with Functional Secret
+    FunBic: A Python library of privacy-preserving biclustering algorithm (Cheng and Church) with Function Secret
     Sharing
 
     Copyright (C) 2024  Shokofeh VahidianSadegh
 
-    This file is part of FunBic-CCA.
+    This file is part of FunBic.
 
 """
-from scipy.signal import residue
-
 from _base import BaseBiclusteringAlgorithm
 from models import Bicluster, Biclustering
 from sklearn.utils.validation import check_array
@@ -71,7 +69,6 @@ class ChengChurchAlgorithm(BaseBiclusteringAlgorithm):
 
         # Definitions
         biclusters = []
-        # t_share, t_score, t_comp = [], [], []
         t_shareMSR, t_shareEval, t_size = [], [], []
 
         # For number of biclusters
@@ -100,12 +97,6 @@ class ChengChurchAlgorithm(BaseBiclusteringAlgorithm):
 
             rows_1 = np.ones(num_row_1, dtype=bool)
             cols_1 = np.ones(num_col_1, dtype=bool)
-
-            with open('result_size.txt', 'w') as saveFile:
-                # saveFile.write("\n")
-                saveFile.write(str(P_0.aij_0) + "\n")
-                saveFile.write(str(P_1.aij_1) + "\n")
-            t_size.append(os.path.getsize("result_size.txt"))
 
             # Steps including multiple deletion/ addition
             P_0.bij_0, P_1.bij_1, fss_rs_rows_0, fss_rs_rows_1 = self._multiple_node_deletion(P_0.aij_0, P_1.aij_1,
@@ -143,15 +134,6 @@ class ChengChurchAlgorithm(BaseBiclusteringAlgorithm):
                 data            = np.random.uniform(low=min_value, high=max_value, size=bicluster_shape)
 
             biclusters.append(Bicluster(rows_indexes, cols_indexes))
-
-        # Write the performance time
-        with open('yeast_performance.txt', 'a') as saveFile:
-            saveFile.write("\n")
-            # saveFile.write("Performance of MSR:"  + str(np.mean(t_shareMSR)) + "\n")
-            # saveFile.write("Performance of Eval:" + str(np.mean(t_shareEval)) + "\n")
-            saveFile.write("Number of bits     :" + str(self.highest_range) + "\n")
-            saveFile.write("Communication size :" + str(np.mean(t_size)) + "\n")
-            # saveFile.write("\n")
 
 
         return Biclustering(biclusters)
@@ -547,23 +529,6 @@ class ChengChurchAlgorithm(BaseBiclusteringAlgorithm):
 
     def _calculate_msr(self, sq_residues, multidel, coladd, rowadd):
         """Calculate only MSRs locally of the rows, of the columns and of the full data matrix."""
-        # Calculate performance
-        """
-        t_sc_0 = time.perf_counter()
-        t_sc_1 = time.perf_counter()
-        t_score.append(t_sc_1 - t_sc_0)
-
-        with open('t_score_size.txt', 'w') as saveFile:
-            # saveFile.write("\n")
-            saveFile.write(str(msr) + "\n")
-            saveFile.write(str(row_msr) + "\n")
-            saveFile.write(str(col_msr) + "\n")
-            # saveFile.write("\n")
-
-        t_sh_1 = time.perf_counter()
-        t_share.append(t_sh_1 - t_sh_0)
-        t_score.append(os.path.getsize("t_score_size.txt"))
-"""
         # Check which action is being performed; then send msr, or that of rows and columns back
         if multidel:
             squared_residues = sq_residues
@@ -624,7 +589,6 @@ class ChengChurchAlgorithm(BaseBiclusteringAlgorithm):
 
 
         return P0.sq_j, P1.sq_j
-
 
 
     def secMult_vector(self, share_00, share_01, share_10, share_11):
@@ -700,14 +664,8 @@ class ChengChurchAlgorithm(BaseBiclusteringAlgorithm):
         P1.k_j = k1
 
         # Send the shares to the parties
-        # Calculate the performance and communication
-        # t_sh_0 = time.perf_counter()
         P0.z_j = z_0
         P1.z_j = z_1
-
-        # t_sh_1 = time.perf_counter()
-        # t_share.append(t_sh_1 - t_sh_0)
-        # t_sh_0 = time.perf_counter()
 
         # Mask the public input to FSS gate
         P0.z_hat_j = P0.z_j + P0.r_in_j
@@ -717,28 +675,11 @@ class ChengChurchAlgorithm(BaseBiclusteringAlgorithm):
         P0.z_hat_nj = P1.z_hat_j
 
         # Evaluation with FSS IC gate
-        # and calculate the performance
-        # t_cp_0 = time.perf_counter()
-
         P1.o_j = funshade.eval_sign(K, P1.j, P1.k_j, P1.z_hat_j, P1.z_hat_nj)
         P0.o_j = funshade.eval_sign(K, P0.j, P0.k_j, P0.z_hat_j, P0.z_hat_nj)
 
-        # t_cp_1 = time.perf_counter()
-        # t_comp.append(t_cp_1 - t_cp_0)
-
         # Construct the output of both parties
         o = P0.o_j + P1.o_j
-        # t_sh_1 = time.perf_counter()
-        # t_share.append(os.path.getsize("t_share_size.txt"))
-        # t_share.append((t_sh_1 - t_sh_0))
-
-        """ with open('t_DOP_size.txt', 'w') as saveFile:
-            # saveFile.write("\n")
-            saveFile.write(str(P0.z_hat_j) + "\n")
-            saveFile.write(str(P1.z_hat_j) + "\n")
-            # saveFile.write("\n")
-
-        t_share.append(os.path.getsize("t_DOP_size.txt"))"""
 
         return o
 
@@ -767,15 +708,10 @@ class ChengChurchAlgorithm(BaseBiclusteringAlgorithm):
         P1.k_j = k1
 
         # Send the shares to the parties
-        # and calculate the performance and communication
-        # t_sh_0 = time.perf_counter()
         K = len(z_0)
         P0.z_j = z_0
         P1.z_j = z_1
 
-        # t_sh_1 = time.perf_counter()
-        # t_share.append(t_sh_1 - t_sh_0)
-        # t_sh_0 = time.perf_counter()
 
         # Mask the public input to FSS gate
         P0.z_hat_j = P0.z_j + P0.r_in_j
@@ -785,26 +721,8 @@ class ChengChurchAlgorithm(BaseBiclusteringAlgorithm):
         P0.z_hat_nj = P1.z_hat_j
 
         # Evaluation with FSS IC gate
-        # and calculate the performance
-        # t_cp_0 = time.perf_counter()
-
         P1.o_j = funshade.eval_sign(K, P1.j, P1.k_j, P1.z_hat_j, P1.z_hat_nj)
         P0.o_j = funshade.eval_sign(K, P0.j, P0.k_j, P0.z_hat_j, P0.z_hat_nj)
-
-        # t_cp_1 = time.perf_counter()
-        # t_comp.append(t_cp_1 - t_cp_0)
-
-        # t_sh_1 = time.perf_counter()
-        # t_share.append(os.path.getsize("t_share_size.txt"))
-        # t_share.append((t_sh_1 - t_sh_0))
-
-        """ with open('t_DOP_size.txt', 'w') as saveFile:
-            # saveFile.write("\n")
-            saveFile.write(str(P0.z_hat_j) + "\n")
-            saveFile.write(str(P1.z_hat_j) + "\n")
-            # saveFile.write("\n")
-
-        t_share.append(os.path.getsize("t_DOP_size.txt"))"""
 
         return P0.o_j, P1.o_j
 
