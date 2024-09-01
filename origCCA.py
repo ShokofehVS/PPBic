@@ -100,33 +100,6 @@ class ChengChurchAlgorithm(BaseBiclusteringAlgorithm):
     def _multiple_node_deletion(self, data, rows, cols, msr_thr):
         """Performs the multiple row/column deletion step (this is a direct implementation of the Algorithm 2 described in
         the original paper)"""
-        """msr, row_msr, col_msr = self._calculate_msr(data, rows, cols)
-
-        stop = True if msr <= msr_thr else False
-        while not stop:
-            if len(rows) or len(cols) >= self.data_min_cols:
-                cols_old = np.copy(cols)
-                rows_old = np.copy(rows)
-
-                row_indices = np.nonzero(rows)[0]
-                rows2remove = row_indices[np.where(row_msr > self.multiple_node_deletion_threshold * msr)]
-                # print("rows2removeORG", rows2remove)
-                rows[rows2remove] = False
-
-                msr, row_msr, col_msr = self._calculate_msr(data, rows, cols)
-                col_indices = np.nonzero(cols)[0]
-                # print("np_result", np.where(col_msr > self.multiple_node_deletion_threshold * msr))
-                cols2remove = col_indices[np.where(col_msr > self.multiple_node_deletion_threshold * msr)]
-                # print("cols2removeORG", cols2remove)
-                cols[cols2remove] = False
-
-            msr, row_msr, col_msr = self._calculate_msr(data, rows, cols)
-
-            # Tests if the new MSR value is smaller than the acceptable MSR threshold.
-            # Tests if no rows and no columns were removed during this iteration.
-            # If one of the conditions is true the loop must stop, otherwise it will become an infinite loop.
-            if msr <= msr_thr or (np.all(rows == rows_old) and np.all(cols == cols_old)):
-                stop = True"""
         msr, row_msr, col_msr = self._calculate_msr(data, rows, cols)
 
         stop = True if msr <= msr_thr else False
