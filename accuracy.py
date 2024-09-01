@@ -1,5 +1,4 @@
 from itertools import product
-from scipy import sparse as sp
 from munkres import Munkres
 from math import sqrt
 
