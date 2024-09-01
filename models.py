@@ -20,6 +20,7 @@
 
 import numpy as np
 
+
 class Bicluster:
     """This class models a bicluster.
 
